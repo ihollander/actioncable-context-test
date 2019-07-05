@@ -3,7 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "actioncable": "^5.2.3",
+    "prop-types": "^15.7.2",
     "react": "^16.8.6",
+    "react-actioncable-context": "file:../react-actioncable-context",
     "react-dom": "^16.8.6",
     "react-scripts": "3.0.1"
   },
