@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import TweetForm from "./TweetForm";
 import TweetList from "./TweetList";
 
+import withSocket from "../socket/withSocket";
 import adapter from "../services/adapter";
 
 class Feed extends Component {
@@ -14,6 +15,11 @@ class Feed extends Component {
     adapter.fetchFeed(1).then(res => {
       this.setState({ displayedTweets: res });
     });
+  }
+
+  componentWillUnmount() {
+    console.log("unmount");
+    this.props.subscription && this.props.subscription.unsubscribe();
   }
 
   addTweet = tweet => {
@@ -34,7 +40,7 @@ class Feed extends Component {
   };
 
   render() {
-    console.log(this.props)
+    console.log(this.props);
     const { displayedTweets, newTweets } = this.state;
 
     return (
@@ -50,4 +56,9 @@ class Feed extends Component {
   }
 }
 
-export default Feed;
+// this doesn't work bc we can't call onReceived from the Feed
+// two way data flow from sockets isn't compatible with one way flow in components
+export default withSocket({
+  channel: "FeedChannel",
+  options: { onReceived: data => console.log(data) }
+})(Feed);

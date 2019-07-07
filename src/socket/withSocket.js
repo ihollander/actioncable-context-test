@@ -1,5 +1,4 @@
 import React from "react";
-import PropTypes from "prop-types";
 import SocketContext from "./socket-context";
 
 class SocketChannel extends React.Component {
@@ -8,15 +7,12 @@ class SocketChannel extends React.Component {
   };
 
   subscribe() {
-    const { onReceived } = this.props;
+    const { onReceived } = this.props.options;
 
     const subscription = this.props.cable.subscriptions.create(
       this.props.channel,
       {
-        received: data => {
-          if (typeof onReceived !== "function") return;
-          onReceived(data);
-        }
+        received: onReceived
       }
     );
 
@@ -52,28 +48,25 @@ class SocketChannel extends React.Component {
   }
 
   render() {
-    console.log("Consumer state", this.state);
     return this.props.children ? this.props.children(this.state) : null;
   }
 }
 
-SocketChannel.propTypes = {
-  render: PropTypes.func
+// model after React-redux connect?
+export default ({ channel, options }) => Component => {
+  return props => (
+    <SocketContext.Consumer>
+      {cable => (
+        <SocketChannel cable={cable} channel={channel} options={options}>
+          {subscription => (
+            <Component
+              {...props}
+              subscription={subscription}
+              options={options}
+            />
+          )}
+        </SocketChannel>
+      )}
+    </SocketContext.Consumer>
+  );
 };
-
-const SocketConsumer = props => (
-  <SocketContext.Consumer>
-    {cable => <SocketChannel {...props} cable={cable} />}
-  </SocketContext.Consumer>
-);
-
-SocketConsumer.propTypes = {
-  onReceived: PropTypes.func,
-  onInitialized: PropTypes.func,
-  onConnected: PropTypes.func,
-  onDisconnected: PropTypes.func,
-  onRejected: PropTypes.func,
-  children: PropTypes.any
-};
-
-export default SocketConsumer;

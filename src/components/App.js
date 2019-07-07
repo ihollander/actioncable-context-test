@@ -1,6 +1,5 @@
 import React from "react";
 import Feed from "./Feed";
-import SocketConsumer from '../socket/SocketConsumer'
 
 class App extends React.Component {
   state = {
@@ -14,13 +13,7 @@ class App extends React.Component {
           Toggle Feed
         </button>
 
-        {this.state.toggle && <SocketConsumer
-          channel={{ channel: "FeedChannel" }}
-          onReceived={(tweet) => {
-            console.log("what will it be!", tweet)
-          }}
-          render={(consumerProps) => <Feed {...consumerProps} />}
-        />}
+        {this.state.toggle && <Feed />}
       </div>
     );
   }

@@ -2,25 +2,22 @@ import React from "react";
 import SocketContext from "./socket-context";
 import ActionCable from "actioncable";
 import PropTypes from "prop-types";
+// import adapter from "./socket-adapter";
 
 class SocketProvider extends React.Component {
-  state = { connection: null };
-
-  componentDidMount() {
-    const connection = ActionCable.createConsumer(this.props.url);
-    console.log('connection', connection)
-    this.setState({ connection });
-  }
+  state = {
+    cable: ActionCable.createConsumer(this.props.url)
+  };
 
   componentWillUnmount() {
-    if (this.state.connection) {
-      this.state.connection.disconnect()
-    };
+    if (this.state.cable) {
+      this.state.cable.disconnect();
+    }
   }
 
   render() {
     return (
-      <SocketContext.Provider value={this.state.connection}>
+      <SocketContext.Provider value={this.state.cable}>
         {this.props.children}
       </SocketContext.Provider>
     );
